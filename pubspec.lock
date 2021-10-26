@@ -93,13 +93,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  font_awesome:
+  infinite_carousel:
     dependency: "direct main"
     description:
-      name: font_awesome
+      name: infinite_carousel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.10.1"
+    version: "1.0.1"
   js:
     dependency: transitive
     description:
@@ -107,6 +107,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
+  line_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: line_awesome_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   lints:
     dependency: transitive
     description:

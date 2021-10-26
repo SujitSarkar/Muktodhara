@@ -31,5 +31,8 @@ class CColor{
   };
 
   static const Color lightThemeColor = Color(0xffFF5C00);
-  static const Color darkThemeColor = Color(0xff3a3b3c);
+  static const Color darkThemeColor = Color(0xff151A18);
+  static const Color greyThemColor = Color(0xff303533);
+  static const Color greyThemeColor2 = Color(0xff3a3b3c);
+
 }
