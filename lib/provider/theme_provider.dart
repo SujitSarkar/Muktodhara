@@ -74,6 +74,7 @@ class ThemeProvider extends ChangeNotifier {
   Color bottomNavigationBackgroundColor() => _isLight? Colors.amberAccent : CColor.greyThemeColor2;
   Color bottomNavigationTitleColor() => _isLight? Colors.black : Colors.white;
   Color bottomNavSelectItemBgColor() => _isLight? Colors.green.shade700 : Colors.grey;
+  Color poemNameColor() => _isLight? Colors.black : Colors.white;
 
   changeStatusBarTheme() {
     if (_isLight) {

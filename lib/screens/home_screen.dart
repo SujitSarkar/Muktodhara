@@ -57,9 +57,9 @@ class _HomeState extends State<Home> {
         backgroundColor: themeProvider.screenBackgroundColor(),
         appBar: PreferredSize(
           preferredSize: AppBar().preferredSize,
-          child: _showSearchBar? _customSearchBar(themeProvider, size) : _customAppBar(themeProvider),
+          child: _showSearchBar? _customSearchBar(themeProvider, size) : _customAppBar(size , themeProvider),
         ),
-        body: _bodyUI(size),
+        body: _bodyUI(size, themeProvider),
         bottomNavigationBar: ScrollToHide(
             scrollController: _scrollController,
             child: _customBottomNavigation(size)),
@@ -67,7 +67,7 @@ class _HomeState extends State<Home> {
   }
 
   /// body
-  Widget _bodyUI(Size size) {
+  Widget _bodyUI(Size size, ThemeProvider themeProvider) {
     return NotificationListener(
       onNotification: (scrollNotification) {
         if (_scrollController.position.userScrollDirection ==
@@ -83,7 +83,7 @@ class _HomeState extends State<Home> {
         }return true;
       },
       child: ListView.builder(
-           controller: _scrollController,
+          controller:_scrollController,
           itemCount: 15,
           shrinkWrap: true,
           physics: const ClampingScrollPhysics(),
@@ -131,12 +131,11 @@ class _HomeState extends State<Home> {
         ]);
   }
 
-
   /// custom app bar
-  Widget _customAppBar(ThemeProvider themeProvider) {
+  Widget _customAppBar(Size size, ThemeProvider themeProvider) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      height: _forwarded?  AppBar().preferredSize.height : 0,
+      height: _forwarded?  size.width*.2 : 0,
       color: themeProvider.appBarColor(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -238,6 +237,40 @@ class _HomeState extends State<Home> {
           suffixIcon: InkWell(
               onTap: () => setState(() => _showSearchBar = !_showSearchBar),
               child: Icon(Icons.close, color:  _forwarded? themeProvider.appBarIconColor() : Colors.transparent)),
+        ),
+      ),
+    );
+  }
+
+  /// custom dropDownList
+  Widget _customDropDownList(Size size, ThemeProvider themeProvider){
+    return Padding(
+      padding:  EdgeInsets.symmetric(horizontal: size.width*.03),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(size.width*.02),
+        ),
+        elevation: 1,
+        color: themeProvider.poemCardColor(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: size.width * .04, horizontal: size.width * .03),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  'সকল কবি',
+                  style: TextStyle(
+                      color:  themeProvider.poemNameColorOnCard(),
+                      fontSize: size.width*.05,
+                      fontWeight: FontWeight.bold
+                  ),
+                )
+              ),
+              Icon(Icons.arrow_drop_down, color: themeProvider.bodyIconColor(),)
+            ],
+          ),
         ),
       ),
     );
