@@ -78,7 +78,6 @@ class _HomeState extends State<Home> {
             ScrollDirection.reverse) {
           if (_forwarded == true) {
             setState(() => _forwarded = false);
-            // _appBarHeight = size.width * .19;
             _dropDownVisibility? _appBarHeight = size.width * .19 : _appBarHeight = 0;
           }
         } else if (_scrollController.position.userScrollDirection ==
