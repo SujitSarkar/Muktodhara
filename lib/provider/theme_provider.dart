@@ -71,9 +71,13 @@ class ThemeProvider extends ChangeNotifier {
   Color changeStatusBar() => _isLight ? Colors.white : CColor.darkThemeColor;
   Color poemCardColor() => _isLight? Colors.white : CColor.greyThemColor;
   Color poemNameColorOnCard() => _isLight? CColor.greyThemColor : Colors.white;
-  Color bottomNavigationBackgroundColor() => _isLight? Colors.green.shade100 : CColor.greyThemeColor2;
+  Color bottomNavigationBackgroundColor() => _isLight? Colors.amberAccent : CColor.greyThemeColor2;
   Color bottomNavigationTitleColor() => _isLight? Colors.black : Colors.white;
   Color bottomNavSelectItemBgColor() => _isLight? Colors.green.shade700 : Colors.grey;
+  Color poemNameColor() => _isLight? Colors.black : Colors.white;
+  Color poetListDialogBgColor() => _isLight? Colors.white : CColor.greyThemeColor2;
+  Color poetListDialogTitleColor() => _isLight? Colors.black : Colors.white;
+  Color dialogDividerColor() => _isLight? Colors.grey.shade200 : Colors.grey.shade700;
 
   changeStatusBarTheme() {
     if (_isLight) {
