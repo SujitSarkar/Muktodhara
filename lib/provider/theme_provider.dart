@@ -78,6 +78,8 @@ class ThemeProvider extends ChangeNotifier {
   Color poetListDialogBgColor() => _isLight? Colors.white : CColor.greyThemeColor2;
   Color poetListDialogTitleColor() => _isLight? Colors.black : Colors.white;
   Color dialogDividerColor() => _isLight? Colors.grey.shade200 : Colors.grey.shade700;
+  Color bookNameColor() => _isLight? Colors.black : Colors.white;
+  Color spinKitColor() => _isLight? Colors.blue.shade700 : Colors.amberAccent;
 
   changeStatusBarTheme() {
     if (_isLight) {
