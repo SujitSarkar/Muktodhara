@@ -80,6 +80,8 @@ class ThemeProvider extends ChangeNotifier {
   Color dialogDividerColor() => _isLight? Colors.grey.shade200 : Colors.grey.shade700;
   Color bookNameColor() => _isLight? Colors.black : Colors.white;
   Color spinKitColor() => _isLight? Colors.blue.shade700 : Colors.amberAccent;
+  Color toastBgColor() => _isLight? Colors.black54 : Colors.white54;
+  Color toastTextColor() => _isLight? Colors.white : Colors.black;
 
   changeStatusBarTheme() {
     if (_isLight) {

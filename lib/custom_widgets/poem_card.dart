@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mukto_dhara/custom_classes/toast.dart';
+import 'package:mukto_dhara/model/favourite_poem_model.dart';
+import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/read_poem_page.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock/wakelock.dart';
 
 class PoemCard extends StatelessWidget {
-  String poemId;
+  String? poemId;
   String poemName;
   String poemFirstLine;
-  IconData iconData;
+  IconData? iconData;
 
   PoemCard(
       {Key? key,
@@ -20,10 +25,12 @@ class PoemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    final DatabaseHelper databaseHelper = Provider.of<DatabaseHelper>(context);
     final Size size = MediaQuery.of(context).size;
     return InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poemId: poemId,)));
+        Wakelock.enable();
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poemId: poemId!,)));
       },
       child: Padding(
         padding:  EdgeInsets.symmetric(horizontal: size.width*.03),
@@ -49,7 +56,17 @@ class PoemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(iconData, color: themeProvider.bodyIconColor(),)
+                InkWell(
+                  onTap: () async {
+                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine);
+                    await databaseHelper.insertFavouritePoem(favouritePoem);
+                    showToast('কবিতাটি পছন্দের তালিকায় যুক্ত হয়েছে', themeProvider);
+                  },
+                  child: Padding(
+                    padding:  EdgeInsets.only(left: size.width*.02, right: size.width*.02, bottom: size.width*.02),
+                    child: Icon(iconData, color: themeProvider.bodyIconColor()),
+                  ),
+                )
               ],
             ),
           ),

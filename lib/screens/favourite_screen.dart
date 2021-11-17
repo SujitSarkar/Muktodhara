@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/custom_widgets/poem_card.dart';
+import 'package:mukto_dhara/model/favourite_poem_model.dart';
+import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class FavouriteScreen extends StatelessWidget {
+class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FavouriteScreen> createState() => _FavouriteScreenState();
+}
+
+class _FavouriteScreenState extends State<FavouriteScreen> {
+  int _count = 0;
+  bool _loading = false;
+  List<FavouritePoemModel> _favouritePoems = [];
+
+  Future _customInit(DatabaseHelper databaseHelper) async {
+    _count++;
+    setState(() => _loading = true);
+    await databaseHelper.getFavouritePoems().then((value) => setState(() {
+      _loading = false;
+      _favouritePoems = databaseHelper.favouritePoemList;
+    }));
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    final DatabaseHelper databaseHelper = Provider.of<DatabaseHelper>(context);
     final Size size = MediaQuery.of(context).size;
+    if(_count == 0) _customInit(databaseHelper);
 
     themeProvider.changeStatusBarTheme();
     return  Scaffold(
@@ -38,24 +62,36 @@ class FavouriteScreen extends StatelessWidget {
             ),
           ];
         },
-        body: _bodyUI(size),
+       body: _bodyUI(size, databaseHelper, themeProvider),
       ),
     );
   }
 
-  Widget _bodyUI(Size size){
-    return ListView.builder(
+  Widget _bodyUI(Size size, DatabaseHelper databaseHelper, ThemeProvider themeProvider){
+    return _loading? SpinKitDualRing(color: themeProvider.spinKitColor(), lineWidth: 4, size: 40,)
+     : databaseHelper.favouritePoemList.isNotEmpty?
+    ListView.builder(
       padding: EdgeInsets.zero,
-        itemCount: 15,
+        itemCount: _favouritePoems.length,
         shrinkWrap: true,
         physics: const ClampingScrollPhysics(),
         itemBuilder: (context, index) {
-          return PoemCard(
-            poemId: '1',
-            poemName: 'শীতের আদর্শলিপি',
-            poemFirstLine: 'পাতাঝরা বিকেলের কোলাজ শুনে যে পাখিরা',
-            iconData: LineAwesomeIcons.bookmark,
+          return Dismissible(
+              direction: DismissDirection.endToStart,
+              resizeDuration: const Duration(milliseconds: 200),
+              key: ObjectKey(_favouritePoems.elementAt(index)),
+            onDismissed: (direction) async {
+              await databaseHelper.deleteFavouritePoem(_favouritePoems[index].postId, index);
+              await databaseHelper.getFavouritePoems();
+              showToast('পছন্দের তালিকা থেকে মুছে ফেলা হয়েছে', themeProvider);
+            },
+              child: PoemCard(
+              poemId:  _favouritePoems[index].postId,
+              poemName: _favouritePoems[index].poemName,
+              poemFirstLine: _favouritePoems[index].firstLine,
+              iconData: null
+            ),
           );
-        });
+        }) : Center(child: Text('কোন কবিতা নেই', style: TextStyle(color: themeProvider.appBarTitleColor()),));
   }
 }

@@ -6,17 +6,18 @@ import 'dart:io';
 
 class DatabaseHelper extends ChangeNotifier{
 
-  List<FavouritePoemModel> _favouritePoemList = [];
-  // List<String> _productIdListInCart=[];
+  final List<FavouritePoemModel> _favouritePoemList = [];
+  final List<String> _favouritePoemIdList = [];
 
 
   get favouritePoemList => _favouritePoemList;
-  // get productIdListInCart=> _productIdListInCart;
+  get favouritePoemIdList => _favouritePoemIdList;
+
 
   static DatabaseHelper? _databaseHelper; // singleton DatabaseHelper
   static Database? _database; // singleton Database
 
-  String favouritePoemsTable = 'cart_table';
+  String favouritePoemsTable = 'favouritePoemTable';
   String colId = 'id';
   String colPostId = 'postId';
   String colPoemName = 'poemName';
@@ -32,7 +33,7 @@ class DatabaseHelper extends ChangeNotifier{
   void _createDB(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $favouritePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
-            '$colId TEXT, $colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT)');
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT)');
   }
 
   Future<Database> initializeDatabase() async {
@@ -59,10 +60,12 @@ class DatabaseHelper extends ChangeNotifier{
   ///Get the 'Map List' and convert it to 'Cart List
   Future<void> getFavouritePoems() async {
     _favouritePoemList.clear();
+    _favouritePoemIdList.clear();
     var favouritePoemMapList = await getFavouritePoemsMapList();
     int count = favouritePoemMapList.length;
     for (int i = 0; i < count; i++) {
       _favouritePoemList.add(FavouritePoemModel.fromMapObject(favouritePoemMapList[i]));
+      _favouritePoemIdList.add(FavouritePoemModel.fromMapObject(favouritePoemMapList[i]).postId);
     }
     notifyListeners();
   }
@@ -76,22 +79,24 @@ class DatabaseHelper extends ChangeNotifier{
   //   return result;
   // }
 
-  //Insert operation
-  Future<int> insertCart(FavouritePoemModel favouritePoemModel) async {
+  ///Insert operation
+  Future<int> insertFavouritePoem(FavouritePoemModel favouritePoemModel) async {
     Database db = await database;
     var result = await db.insert(favouritePoemsTable, favouritePoemModel.toMap());
     await getFavouritePoems();
     return result;
   }
 
-  //Delete operation
-  // Future<int> deleteCart(String pId) async {
-  //   Database db = await this.database;
-  //   var result =
-  //   await db.rawDelete('DELETE FROM $cartTable WHERE $colPId = $pId');
-  //   await getCartList();
-  //   return result;
-  // }
+  ///Delete operation
+  Future<int> deleteFavouritePoem(String postId, int index) async {
+    Database db = await database;
+    var result =
+    await db.rawDelete('DELETE FROM $favouritePoemsTable WHERE $colPostId = $postId');
+    _favouritePoemIdList.removeAt(index);
+    await getFavouritePoems();
+    notifyListeners();
+    return result;
+  }
 
   //Delete operation
   // Future<int> deleteAllCartList() async {

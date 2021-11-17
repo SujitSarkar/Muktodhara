@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
+import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/home_screen.dart';
 import 'package:mukto_dhara/screens/splash_screen.dart';
@@ -31,7 +32,8 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider(widget.isLight?SThemeData.lightThemeData:SThemeData.darkThemeData,widget.isLight)),
-        ChangeNotifierProvider(create: (_) => ApiProvider())
+        ChangeNotifierProvider(create: (_) => ApiProvider()),
+        ChangeNotifierProvider(create: (_) => DatabaseHelper())
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
