@@ -11,9 +11,9 @@ class FavouritePoemModel{
   String get poemName => _poemName!;
   String get firstLine => _firstLine!;
 
-  set postId(String value) => _postId = value;
-  set poemName(String value) => _poemName = value;
-  set firstLine(String value) => _firstLine = value;
+  // set postId(String value) => _postId = value;
+  // set poemName(String value) => _poemName = value;
+  // set firstLine(String value) => _firstLine = value;
 
 
 
@@ -24,6 +24,7 @@ class FavouritePoemModel{
     if (id != null) {
       map['id'] = _id;
     }
+
     map['postId'] = _postId;
     map['poemName'] = _poemName;
     map['firstLine'] = _firstLine;
@@ -33,7 +34,7 @@ class FavouritePoemModel{
   //Extract a note object from a map object
   FavouritePoemModel.fromMapObject(Map<String, dynamic> map) {
     _id = map['id'];
-    _postId = map['_postId'];
+    _postId = map['postId'];
     _poemName = map['poemName'];
     _firstLine = map['firstLine'];
   }
