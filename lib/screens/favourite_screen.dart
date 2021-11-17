@@ -51,8 +51,8 @@ class FavouriteScreen extends StatelessWidget {
         physics: const ClampingScrollPhysics(),
         itemBuilder: (context, index) {
           return PoemCard(
+            poemId: '1',
             poemName: 'শীতের আদর্শলিপি',
-            poetName: 'স্বপ্নীল চক্রবর্তী',
             poemFirstLine: 'পাতাঝরা বিকেলের কোলাজ শুনে যে পাখিরা',
             iconData: LineAwesomeIcons.bookmark,
           );

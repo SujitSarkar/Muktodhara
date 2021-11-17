@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/home_screen.dart';
+import 'package:mukto_dhara/screens/splash_screen.dart';
 import 'package:mukto_dhara/variables/color_variables.dart';
 import 'package:mukto_dhara/variables/theme_data.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +31,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider(widget.isLight?SThemeData.lightThemeData:SThemeData.darkThemeData,widget.isLight)),
+        ChangeNotifierProvider(create: (_) => ApiProvider())
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -36,7 +39,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'মুক্তধারা',
             theme: themeProvider.themeData,
-            home: const Home(),
+            home: const SplashScreen(),
           );
         }
       ),

@@ -4,17 +4,18 @@ import 'package:mukto_dhara/screens/read_poem_page.dart';
 import 'package:provider/provider.dart';
 
 class PoemCard extends StatelessWidget {
+  String poemId;
   String poemName;
-  String poetName;
   String poemFirstLine;
   IconData iconData;
 
   PoemCard(
-      {required this.poemName,
-      required this.poetName,
+      {Key? key,
+        required this.poemId,
+        required this.poemName,
       required this.poemFirstLine,
       required this.iconData,
-     });
+     }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class PoemCard extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     return InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poemId: poemId,)));
       },
       child: Padding(
         padding:  EdgeInsets.symmetric(horizontal: size.width*.03),
@@ -34,7 +35,7 @@ class PoemCard extends StatelessWidget {
           color: themeProvider.poemCardColor(),
           child: Padding(
             padding: EdgeInsets.symmetric(
-                vertical: size.width * .04, horizontal: size.width * .03),
+                vertical: size.width * .05, horizontal: size.width * .03),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -44,12 +45,11 @@ class PoemCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       _customPoemNameText(size, themeProvider),
-                      _customPoetNameText(size, themeProvider),
-                      _customPoemFirstLineText(size, themeProvider),
+                      poemFirstLine != ''? _customPoemFirstLineText(size, themeProvider) : const SizedBox(),
                     ],
                   ),
                 ),
-                IconButton(onPressed: (){}, icon: Icon(iconData, color: themeProvider.bodyIconColor(),))
+                Icon(iconData, color: themeProvider.bodyIconColor(),)
               ],
             ),
           ),
@@ -66,19 +66,6 @@ class PoemCard extends StatelessWidget {
         color:  themeProvider.poemNameColorOnCard(),
         fontSize: size.width*.05,
         fontWeight: FontWeight.bold
-      ),
-    );
-  }
-
-
-  /// poet name text
-  Widget _customPoetNameText(Size size, ThemeProvider themeProvider){
-    return Text(
-      poetName,
-      style: TextStyle(
-          color:  themeProvider.poemNameColorOnCard(),
-          fontSize: size.width*.04,
-          fontWeight: FontWeight.w500
       ),
     );
   }
