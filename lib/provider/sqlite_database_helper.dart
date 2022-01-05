@@ -9,7 +9,6 @@ class DatabaseHelper extends ChangeNotifier{
   final List<FavouritePoemModel> _favouritePoemList = [];
   final List<String> _favouritePoemIdList = [];
 
-
   get favouritePoemList => _favouritePoemList;
   get favouritePoemIdList => _favouritePoemIdList;
 
@@ -22,6 +21,7 @@ class DatabaseHelper extends ChangeNotifier{
   String colPostId = 'postId';
   String colPoemName = 'poemName';
   String colFirstLine = 'firstLine';
+  String colPoem = 'poem';
 
   DatabaseHelper._createInstance(); //Named constructor to create instance of DatabaseHelper
 
@@ -33,7 +33,7 @@ class DatabaseHelper extends ChangeNotifier{
   void _createDB(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $favouritePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
-            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT)');
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT)');
   }
 
   Future<Database> initializeDatabase() async {

@@ -4,19 +4,16 @@ import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/model/book.dart';
 import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:mukto_dhara/model/poem.dart';
 import 'package:mukto_dhara/model/selected_book_model.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 
 class ApiProvider extends ChangeNotifier{
   BookListModel? _bookListModel;
   Book? _book;
-  Poem? _poem;
   SelectedBook? _selectedBook;
 
   get bookListModel => _bookListModel;
   get book => _book;
-  get poem => _poem;
   get selectedBook => _selectedBook;
 
   void setSelectedBook(SelectedBook selectedBook) {
@@ -61,18 +58,18 @@ class ApiProvider extends ChangeNotifier{
     }
   }
 
-  Future <void> getSinglePoem(String poemId, ThemeProvider themeProvider) async {
-    String baseUrl = 'https://sohelmahroof.com.bd/api/poem_details.php?poem=$poemId';
-    try{
-      var response = await http.get(Uri.parse(baseUrl));
-      _poem = poemFromJson(response.body);
-      // ignore: avoid_print
-      print('poem list length: ${book!.result!.length}');
-    } on SocketException{
-      showToast('No internet connection!', themeProvider);
-    }catch(error){
-    // ignore: avoid_print
-    print('getting single poem error: $error');
-    }
-  }
+  // Future <void> getSinglePoem(String poemId, ThemeProvider themeProvider) async {
+  //   String baseUrl = 'https://sohelmahroof.com.bd/api/poem_details.php?poem=$poemId';
+  //   try{
+  //     var response = await http.get(Uri.parse(baseUrl));
+  //     _poem = poemFromJson(response.body);
+  //     // ignore: avoid_print
+  //     print('poem list length: ${book!.result!.length}');
+  //   } on SocketException{
+  //     showToast('No internet connection!', themeProvider);
+  //   }catch(error){
+  //   // ignore: avoid_print
+  //   print('getting single poem error: $error');
+  //   }
+  // }
 }

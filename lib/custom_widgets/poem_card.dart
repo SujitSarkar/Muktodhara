@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/model/favourite_poem_model.dart';
 import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
@@ -12,6 +11,7 @@ class PoemCard extends StatelessWidget {
   String? poemId;
   String poemName;
   String poemFirstLine;
+  String poem;
   IconData? iconData;
 
   PoemCard(
@@ -20,6 +20,7 @@ class PoemCard extends StatelessWidget {
         required this.poemName,
       required this.poemFirstLine,
       required this.iconData,
+        required this.poem
      }) : super(key: key);
 
   @override
@@ -30,7 +31,7 @@ class PoemCard extends StatelessWidget {
     return InkWell(
       onTap: (){
         Wakelock.enable();
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poemId: poemId!,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poem: poem,poemName: poemName)));
       },
       child: Padding(
         padding:  EdgeInsets.symmetric(horizontal: size.width*.03),
@@ -58,7 +59,7 @@ class PoemCard extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine);
+                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine,poem);
                     await databaseHelper.insertFavouritePoem(favouritePoem);
                     showToast('কবিতাটি পছন্দের তালিকায় যুক্ত হয়েছে', themeProvider);
                   },

@@ -89,6 +89,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
               poemId:  _favouritePoems[index].postId,
               poemName: _favouritePoems[index].poemName,
               poemFirstLine: _favouritePoems[index].firstLine,
+              poem: _favouritePoems[index].poem,
               iconData: null
             ),
           );

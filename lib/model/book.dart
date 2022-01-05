@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final book = bookFromJson(jsonString);
+
 import 'dart:convert';
 
 Book bookFromJson(String str) => Book.fromJson(json.decode(str));
@@ -25,21 +29,25 @@ class Result {
     this.postId,
     this.poemName,
     this.firstLine,
+    this.poem,
   });
 
   String? postId;
   String? poemName;
   dynamic firstLine;
+  String? poem;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     postId: json["post_id"],
     poemName: json["poem_name"],
     firstLine: json["first_line"],
+    poem: json["poem"],
   );
 
   Map<String, dynamic> toJson() => {
     "post_id": postId,
     "poem_name": poemName,
     "first_line": firstLine,
+    "poem": poem,
   };
 }

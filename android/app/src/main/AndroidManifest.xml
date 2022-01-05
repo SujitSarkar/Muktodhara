@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mukto_dhara">
+    package="com.glamworlditltd.muktodhara">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="mukto_dhara"
-        android:icon="@mipmap/ic_launcher">
+        android:label="সোহেল মাহ্রুফের কবিতা সমগ্র"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

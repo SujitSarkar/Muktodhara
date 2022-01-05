@@ -24,9 +24,11 @@ class _BookListPageState extends State<BookListPage> {
   Future _customInit(ApiProvider apiProvider, DatabaseHelper databaseHelper,
       ThemeProvider themeProvider) async {
     _count++;
-    setState(() => _loading = true);
-    if (apiProvider.bookListModel == null) await apiProvider.getBookList(themeProvider);
-    setState(() => _loading = false);
+    if (apiProvider.bookListModel == null) {
+      setState(() => _loading = true);
+      await apiProvider.getBookList(themeProvider);
+      setState(() => _loading = false);
+    }
     databaseHelper.getFavouritePoems();
   }
 

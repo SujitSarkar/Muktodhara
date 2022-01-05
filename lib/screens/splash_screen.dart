@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     apiProvider.getBookList(themeProvider);
     Future.delayed(const Duration(milliseconds: 2500)).then((value){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const BookListPage()));
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const BookListPage()), (route) => false);
     });
   }
 

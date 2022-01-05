@@ -3,13 +3,15 @@ class FavouritePoemModel{
   String? _postId;
   String? _poemName;
   String? _firstLine;
+  String? _poem;
 
-  FavouritePoemModel(this._postId, this._poemName,this._firstLine);
+  FavouritePoemModel(this._postId, this._poemName,this._firstLine,this._poem);
 
   int? get id => _id;
   String get postId => _postId!;
   String get poemName => _poemName!;
   String get firstLine => _firstLine!;
+  String get poem => _poem!;
 
   // set postId(String value) => _postId = value;
   // set poemName(String value) => _poemName = value;
@@ -28,6 +30,7 @@ class FavouritePoemModel{
     map['postId'] = _postId;
     map['poemName'] = _poemName;
     map['firstLine'] = _firstLine;
+    map['poem'] = _poem;
     return map;
   }
 
@@ -37,5 +40,6 @@ class FavouritePoemModel{
     _postId = map['postId'];
     _poemName = map['poemName'];
     _firstLine = map['firstLine'];
+    _poem = map['poem'];
   }
 }

@@ -6,7 +6,6 @@ import 'package:infinite_carousel/infinite_carousel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/custom_classes/scroll_to_hide_widget.dart';
 import 'package:mukto_dhara/custom_widgets/appbar_menu.dart';
-import 'package:mukto_dhara/custom_widgets/custom_bottom_navigation_bar.dart';
 import 'package:mukto_dhara/custom_widgets/poem_card.dart';
 import 'package:mukto_dhara/model/selected_book_model.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
@@ -16,9 +15,8 @@ import 'package:mukto_dhara/screens/favourite_screen.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
-  String categoryId;
-  Home({Key? key, required this.categoryId}) : super(key: key);
-
+  final String categoryId;
+  const Home({Key? key, required this.categoryId}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
@@ -126,6 +124,7 @@ class _HomeState extends State<Home> {
               poemId: _searchedPoemList[index].postId,
               poemName: _searchedPoemList[index].poemName,
               poemFirstLine: _searchedPoemList[index].firstLine ?? '',
+              poem: _searchedPoemList[index].poem,
               iconData: databaseHelper.favouritePoemIdList.contains(apiProvider.book.result[index].postId) ? Icons.bookmark : LineAwesomeIcons.bookmark,
             );
           }) :  Center(child: Text('কোন কবিতা নেই', style: TextStyle(color: themeProvider.appBarTitleColor()),)),
