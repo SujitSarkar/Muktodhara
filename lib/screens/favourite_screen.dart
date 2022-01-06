@@ -90,7 +90,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
               poemName: _favouritePoems[index].poemName,
               poemFirstLine: _favouritePoems[index].firstLine,
               poem: _favouritePoems[index].poem,
-              iconData: null
+              iconData: null,
+                bookId: _favouritePoems[index].bookId,
             ),
           );
         }) : Center(child: Text('কোন কবিতা নেই', style: TextStyle(color: themeProvider.appBarTitleColor()),));

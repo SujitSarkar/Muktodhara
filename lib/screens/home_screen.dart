@@ -33,6 +33,8 @@ class _HomeState extends State<Home> {
   List<dynamic> _searchedPoemList = [];
 
   Future _customInit(ApiProvider apiProvider, ThemeProvider themeProvider) async {
+    print(widget.categoryId);
+
     _count++;
     _poemBookList = apiProvider.bookListModel.result;
     setState(() => _loading = true);
@@ -125,6 +127,7 @@ class _HomeState extends State<Home> {
               poemName: _searchedPoemList[index].poemName,
               poemFirstLine: _searchedPoemList[index].firstLine ?? '',
               poem: _searchedPoemList[index].poem,
+              bookId: _searchedPoemList[index].bookId,
               iconData: databaseHelper.favouritePoemIdList.contains(apiProvider.book.result[index].postId) ? Icons.bookmark : LineAwesomeIcons.bookmark,
             );
           }) :  Center(child: Text('কোন কবিতা নেই', style: TextStyle(color: themeProvider.appBarTitleColor()),)),

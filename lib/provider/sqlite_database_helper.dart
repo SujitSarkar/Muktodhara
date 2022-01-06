@@ -1,15 +1,24 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:mukto_dhara/model/favourite_poem_model.dart';
+import 'package:mukto_dhara/offline/model/book_list_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 
 class DatabaseHelper extends ChangeNotifier{
 
+  final List<OfflineBookModel> _bookList = [];
   final List<FavouritePoemModel> _favouritePoemList = [];
+  final List<FavouritePoemModel> _allPoemList = [];
   final List<String> _favouritePoemIdList = [];
 
+  get bookList => _bookList;
   get favouritePoemList => _favouritePoemList;
+  get allPoemList => _allPoemList;
   get favouritePoemIdList => _favouritePoemIdList;
 
 
@@ -17,11 +26,21 @@ class DatabaseHelper extends ChangeNotifier{
   static Database? _database; // singleton Database
 
   String favouritePoemsTable = 'favouritePoemTable';
+  String allPoemsTable = 'allPoemTable';
+  String allBookTable = 'allBookTable';
+
   String colId = 'id';
   String colPostId = 'postId';
   String colPoemName = 'poemName';
   String colFirstLine = 'firstLine';
   String colPoem = 'poem';
+  String colBookId = 'bookId';
+
+  ///All bool column
+  String colCatId='categoryId';
+  String colCatName='categoryName';
+  String colCatDescription='categoryDescription';
+  String colCatImage='catImage';
 
   DatabaseHelper._createInstance(); //Named constructor to create instance of DatabaseHelper
 
@@ -33,7 +52,15 @@ class DatabaseHelper extends ChangeNotifier{
   void _createDB(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $favouritePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
-            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT)');
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
+
+    await db.execute(
+        'CREATE TABLE $allPoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
+
+    await db.execute(
+        'CREATE TABLE $allBookTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
+            '$colCatId TEXT, $colCatName TEXT, $colCatDescription TEXT, $colCatImage TEXT)');
   }
 
   Future<Database> initializeDatabase() async {
@@ -50,14 +77,14 @@ class DatabaseHelper extends ChangeNotifier{
     return _database!;
   }
 
-  //Fetch Map list from DB
+  ///Fetch Favourite poems Map list from DB
   Future<List<Map<String, dynamic>>> getFavouritePoemsMapList() async {
     Database db = await database;
     var result = await db.query(favouritePoemsTable, orderBy: '$colId ASC');
     return result;
   }
 
-  ///Get the 'Map List' and convert it to 'Cart List
+  ///Get Favourite 'Map List' and convert it to 'Cart List
   Future<void> getFavouritePoems() async {
     _favouritePoemList.clear();
     _favouritePoemIdList.clear();
@@ -70,16 +97,7 @@ class DatabaseHelper extends ChangeNotifier{
     notifyListeners();
   }
 
-  //update operation
-  // Future<int> updateCart(CartModel cartModel) async {
-  //   Database db = await this.database;
-  //   var result = await db.update(cartTable, cartModel.toMap(),
-  //       where: '$colPId = ?', whereArgs: [cartModel.pId]);
-  //   await getCartList();
-  //   return result;
-  // }
-
-  ///Insert operation
+  ///Favourite Insert operation
   Future<int> insertFavouritePoem(FavouritePoemModel favouritePoemModel) async {
     Database db = await database;
     var result = await db.insert(favouritePoemsTable, favouritePoemModel.toMap());
@@ -87,7 +105,7 @@ class DatabaseHelper extends ChangeNotifier{
     return result;
   }
 
-  ///Delete operation
+  ///Favourite Delete operation
   Future<int> deleteFavouritePoem(String postId, int index) async {
     Database db = await database;
     var result =
@@ -98,12 +116,68 @@ class DatabaseHelper extends ChangeNotifier{
     return result;
   }
 
-  //Delete operation
-  // Future<int> deleteAllCartList() async {
-  //   Database db = await this.database;
-  //   var result =
-  //   await db.rawDelete('DELETE FROM $cartTable');
-  //   await getCartList();
-  //   return result;
-  // }
+
+
+
+  ///...................................................................
+
+  ///Fetch Books Map list from DB
+  Future<List<Map<String, dynamic>>> getAllBookMapList() async {
+    Database db = await database;
+    var result = await db.query(allBookTable, orderBy: '$colId ASC');
+    return result;
+  }
+
+  ///Get All Book 'Map List' and convert it to 'Cart List
+  Future<void> getAllBookList() async {
+    _bookList.clear();
+    var allBookMapList = await getAllBookMapList();
+    int count = allBookMapList.length;
+    for (int i = 0; i < count; i++) {
+      _bookList.add(OfflineBookModel.fromMapObject(allBookMapList[i]));
+    }
+    notifyListeners();
+    print('Book list: ${_bookList.length}');
+  }
+
+  ///Book Insert operation
+  Future<int> insertOfflineBook(OfflineBookModel offlineBookModel) async {
+    Database db = await database;
+    var result = await db.insert(allBookTable, offlineBookModel.toMap());
+    await getAllBookList();
+    return result;
+  }
+
+  ///Book Delete operation
+  Future<int> deleteBookList() async {
+    Database db = await database;
+    var result = await db.delete(allBookTable);
+    await getAllBookList();
+    notifyListeners();
+    return result;
+  }
+
+  ///Store All Book List To Offline
+  Future<void> storeAllBookToOffline(List<Result> bookList)async{
+    await deleteBookList();
+    Future.forEach(bookList, (Result element)async{
+      final ByteData imageData = await NetworkAssetBundle(Uri.parse(element.catImage!)).load("");
+      final Uint8List bytes = imageData.buffer.asUint8List();
+      final String base64Image = base64.encode(bytes);
+
+      ///insert into offline database
+      OfflineBookModel offlineBookModel = OfflineBookModel(
+          element.categoryId,
+          element.categoryName,
+          element.categoryDescription,
+          base64Image);
+      await insertOfflineBook(offlineBookModel);
+    });
+  }
+
+
+
+
+
+  ///...................................................................
 }

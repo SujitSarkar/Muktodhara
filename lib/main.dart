@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context, themeProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'সোহেল মাহ্রুফের কবিতা সমগ্র',
+            title: 'সোহেল মাহরুফ কবিতা সমগ্র',
             theme: themeProvider.themeData,
             home: const SplashScreen(),
           );

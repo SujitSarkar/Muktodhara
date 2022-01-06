@@ -1,14 +1,20 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mukto_dhara/custom_widgets/appbar_menu.dart';
+import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:mukto_dhara/model/selected_book_model.dart';
+import 'package:mukto_dhara/offline/model/book_list_model.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/home_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class BookListPage extends StatefulWidget {
   const BookListPage({Key? key}) : super(key: key);
@@ -30,6 +36,12 @@ class _BookListPageState extends State<BookListPage> {
       setState(() => _loading = false);
     }
     databaseHelper.getFavouritePoems();
+
+    ///Store Book to Offline
+    if(apiProvider.bookListModel !=null && apiProvider.bookListModel.result.isNotEmpty){
+      await databaseHelper.storeAllBookToOffline(apiProvider.bookListModel.result);
+      //Image.memory(base64Decode(base64Image));
+    }
   }
 
   @override
@@ -81,15 +93,8 @@ class _BookListPageState extends State<BookListPage> {
                                       .bookListModel.result[index].catImage,
                                   bookName: apiProvider.bookListModel
                                       .result[index].categoryName));
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Home(
-                                            categoryId: apiProvider
-                                                .bookListModel
-                                                .result[index]
-                                                .categoryId,
-                                          )));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                  Home(categoryId: apiProvider.bookListModel.result[index].categoryId)));
                             },
                             child: Column(
                               children: [
@@ -146,7 +151,7 @@ class _BookListPageState extends State<BookListPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Text('সোহেল মাহরুফের কবিতা সমগ্র',
+              child: Text('সোহেল মাহরুফ কবিতা সমগ্র',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: themeProvider.appBarTitleColor(),

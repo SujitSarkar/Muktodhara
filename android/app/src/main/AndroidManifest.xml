@@ -2,7 +2,7 @@
     package="com.glamworlditltd.muktodhara">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="সোহেল মাহ্রুফের কবিতা সমগ্র"
+        android:label="সোহেল মাহরুফ কবিতা সমগ্র"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

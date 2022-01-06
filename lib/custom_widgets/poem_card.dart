@@ -12,6 +12,7 @@ class PoemCard extends StatelessWidget {
   String poemName;
   String poemFirstLine;
   String poem;
+  String bookId;
   IconData? iconData;
 
   PoemCard(
@@ -20,7 +21,8 @@ class PoemCard extends StatelessWidget {
         required this.poemName,
       required this.poemFirstLine,
       required this.iconData,
-        required this.poem
+        required this.poem,
+        required this.bookId
      }) : super(key: key);
 
   @override
@@ -59,7 +61,7 @@ class PoemCard extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine,poem);
+                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine,poem,bookId);
                     await databaseHelper.insertFavouritePoem(favouritePoem);
                     showToast('কবিতাটি পছন্দের তালিকায় যুক্ত হয়েছে', themeProvider);
                   },
