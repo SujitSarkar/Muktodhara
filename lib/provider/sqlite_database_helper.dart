@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mukto_dhara/model/book.dart';
 import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:mukto_dhara/model/favourite_poem_model.dart';
 import 'package:mukto_dhara/offline/model/book_list_model.dart';
@@ -11,14 +12,14 @@ import 'dart:io';
 
 class DatabaseHelper extends ChangeNotifier{
 
-  final List<OfflineBookModel> _bookList = [];
+  final List<OfflineBookModel> _offlineBookList = [];
   final List<FavouritePoemModel> _favouritePoemList = [];
-  final List<FavouritePoemModel> _allPoemList = [];
+  final List<FavouritePoemModel> _allOfflinePoemList = [];
   final List<String> _favouritePoemIdList = [];
 
-  get bookList => _bookList;
+  get offlineBookList => _offlineBookList;
   get favouritePoemList => _favouritePoemList;
-  get allPoemList => _allPoemList;
+  get allOfflinePoemList => _allOfflinePoemList;
   get favouritePoemIdList => _favouritePoemIdList;
 
 
@@ -26,7 +27,7 @@ class DatabaseHelper extends ChangeNotifier{
   static Database? _database; // singleton Database
 
   String favouritePoemsTable = 'favouritePoemTable';
-  String allPoemsTable = 'allPoemTable';
+  String allOfflinePoemsTable = 'allPoemTable';
   String allBookTable = 'allBookTable';
 
   String colId = 'id';
@@ -55,7 +56,7 @@ class DatabaseHelper extends ChangeNotifier{
             '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
 
     await db.execute(
-        'CREATE TABLE $allPoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
+        'CREATE TABLE $allOfflinePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
             '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
 
     await db.execute(
@@ -84,7 +85,7 @@ class DatabaseHelper extends ChangeNotifier{
     return result;
   }
 
-  ///Get Favourite 'Map List' and convert it to 'Cart List
+  ///Get Favourite poem List
   Future<void> getFavouritePoems() async {
     _favouritePoemList.clear();
     _favouritePoemIdList.clear();
@@ -116,10 +117,71 @@ class DatabaseHelper extends ChangeNotifier{
     return result;
   }
 
+  ///...................................................................
 
 
+
+
+  ///Fetch All Offline poems Map list from DB
+  Future<List<Map<String, dynamic>>> getAllOfflinePoemsMapList(String bookID) async {
+    Database db = await database;
+    var result = await db.query(allOfflinePoemsTable,
+        where: '$colBookId = ?',
+        whereArgs: [bookID],
+        orderBy: '$colId ASC');
+    return result;
+  }
+
+  ///Get Offline Poem List
+  Future<void> getOfflinePoemList(String bookID) async {
+    _allOfflinePoemList.clear();
+    var offlinePoemMapList = await getAllOfflinePoemsMapList(bookID);
+    int count = offlinePoemMapList.length;
+    for (int i = 0; i < count; i++) {
+      _allOfflinePoemList.add(FavouritePoemModel.fromMapObject(offlinePoemMapList[i]));
+    }
+    notifyListeners();
+  }
+
+  ///Offline poem Insert operation
+  Future<int> insertOfflinePoem(FavouritePoemModel favouritePoemModel) async {
+    Database db = await database;
+    var result = await db.insert(allOfflinePoemsTable, favouritePoemModel.toMap());
+    return result;
+  }
+
+  ///Offline poem Delete operation
+  Future<int> deleteOfflinePoem() async {
+    Database db = await database;
+    var result = await db.delete(allOfflinePoemsTable);
+    return result;
+  }
+
+  ///Store All poem List To Offline
+  Future<void> storeAllPoemsToOffline(List<dynamic> poemList,String bookID)async{
+    await getOfflinePoemList(bookID);
+    await deleteOfflinePoem();
+
+    print('List: ${poemList.length}');
+    Future.forEach(poemList, (dynamic element)async{
+      FavouritePoemModel poemModel = FavouritePoemModel(
+          element.postId,
+          element.poemName,
+          element.firstLine??'',
+          element.poem,
+          element.bookId);
+      await insertOfflinePoem(poemModel);
+    });
+
+    await getOfflinePoemList(bookID);
+
+    //print('Offline Poem List: ${_allOfflinePoemList}');
+  }
 
   ///...................................................................
+
+
+
 
   ///Fetch Books Map list from DB
   Future<List<Map<String, dynamic>>> getAllBookMapList() async {
@@ -129,22 +191,22 @@ class DatabaseHelper extends ChangeNotifier{
   }
 
   ///Get All Book 'Map List' and convert it to 'Cart List
-  Future<void> getAllBookList() async {
-    _bookList.clear();
+  Future<void> getOfflineBookList() async {
+    _offlineBookList.clear();
     var allBookMapList = await getAllBookMapList();
     int count = allBookMapList.length;
     for (int i = 0; i < count; i++) {
-      _bookList.add(OfflineBookModel.fromMapObject(allBookMapList[i]));
+      _offlineBookList.add(OfflineBookModel.fromMapObject(allBookMapList[i]));
     }
     notifyListeners();
-    print('Book list: ${_bookList.length}');
+    print('Offline Book list: ${_offlineBookList.length}');
   }
 
   ///Book Insert operation
   Future<int> insertOfflineBook(OfflineBookModel offlineBookModel) async {
     Database db = await database;
     var result = await db.insert(allBookTable, offlineBookModel.toMap());
-    await getAllBookList();
+    await getOfflineBookList();
     return result;
   }
 
@@ -152,7 +214,7 @@ class DatabaseHelper extends ChangeNotifier{
   Future<int> deleteBookList() async {
     Database db = await database;
     var result = await db.delete(allBookTable);
-    await getAllBookList();
+    await getOfflineBookList();
     notifyListeners();
     return result;
   }
@@ -175,9 +237,4 @@ class DatabaseHelper extends ChangeNotifier{
     });
   }
 
-
-
-
-
-  ///...................................................................
 }

@@ -1,20 +1,14 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mukto_dhara/custom_widgets/appbar_menu.dart';
-import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:mukto_dhara/model/selected_book_model.dart';
-import 'package:mukto_dhara/offline/model/book_list_model.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/home_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class BookListPage extends StatefulWidget {
   const BookListPage({Key? key}) : super(key: key);
@@ -26,19 +20,33 @@ class BookListPage extends StatefulWidget {
 class _BookListPageState extends State<BookListPage> {
   int _count = 0;
   bool _loading = false;
+  List<dynamic> _bookList=[];
 
   Future _customInit(ApiProvider apiProvider, DatabaseHelper databaseHelper,
       ThemeProvider themeProvider) async {
     _count++;
-    if (apiProvider.bookListModel == null) {
+    if(apiProvider.connected){
+      if (apiProvider.bookListModel == null) {
+        setState(() => _loading = true);
+        await apiProvider.getBookList(themeProvider);
+        setState((){
+          _bookList=apiProvider.bookListModel.result;
+        _loading = false;});
+      }else{
+        setState((){
+          _bookList=apiProvider.bookListModel.result;});
+      }
+    }else{
       setState(() => _loading = true);
-      await apiProvider.getBookList(themeProvider);
+      databaseHelper.offlineBookList.isEmpty? await databaseHelper.getOfflineBookList():null;
       setState(() => _loading = false);
+      _bookList = databaseHelper.offlineBookList;
+      setState(() {});
     }
     databaseHelper.getFavouritePoems();
 
     ///Store Book to Offline
-    if(apiProvider.bookListModel !=null && apiProvider.bookListModel.result.isNotEmpty){
+    if(apiProvider.connected && apiProvider.bookListModel !=null && apiProvider.bookListModel.result.isNotEmpty){
       await databaseHelper.storeAllBookToOffline(apiProvider.bookListModel.result);
       //Image.memory(base64Decode(base64Image));
     }
@@ -65,18 +73,15 @@ class _BookListPageState extends State<BookListPage> {
   }
 
   /// body
-  Widget _bodyUI(
-          Size size, ApiProvider apiProvider, ThemeProvider themeProvider) =>
+  Widget _bodyUI(Size size, ApiProvider apiProvider, ThemeProvider themeProvider) =>
       _loading
           ? SpinKitDualRing(
               color: themeProvider.spinKitColor(),
               lineWidth: 4,
-              size: 40,
-            )
+              size: 40)
           : Padding(
               padding: EdgeInsets.all(size.width * .05),
-              child: apiProvider.bookListModel != null
-                  ? apiProvider.bookListModel.result.isNotEmpty
+              child:_bookList.isNotEmpty
                       ? GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -85,23 +90,20 @@ class _BookListPageState extends State<BookListPage> {
                                   crossAxisSpacing: size.width * .02,
                                 childAspectRatio: 0.42
                               ),
-                          itemCount: apiProvider.bookListModel.result.length,
+                          itemCount: _bookList.length,
                           itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
                               apiProvider.setSelectedBook(SelectedBook(
-                                  bookImage: apiProvider
-                                      .bookListModel.result[index].catImage,
-                                  bookName: apiProvider.bookListModel
-                                      .result[index].categoryName));
+                                  bookImage: _bookList[index].catImage!,
+                                  bookName: _bookList[index].categoryName!));
                               Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                  Home(categoryId: apiProvider.bookListModel.result[index].categoryId)));
+                                  Home(categoryId: _bookList[index].categoryId!,poemBookList: _bookList)));
                             },
                             child: Column(
                               children: [
                                 /// book image
-                                CachedNetworkImage(
-                                  imageUrl: apiProvider
-                                      .bookListModel.result[index].catImage,
+                                apiProvider.connected? CachedNetworkImage(
+                                  imageUrl: _bookList[index].catImage!,
                                   placeholder: (context, url) => Padding(
                                     padding: EdgeInsets.all(size.width * .04),
                                     child: Icon(
@@ -113,13 +115,12 @@ class _BookListPageState extends State<BookListPage> {
                                   errorWidget: (context, url, error) =>
                                       const Icon(Icons.error),
                                   fit: BoxFit.cover,
-                                ),
+                                ):Image.memory(base64Decode(_bookList[index].catImage!)),
                                 SizedBox(height: size.width * .02),
 
                                 /// book name
                                 Text(
-                                  apiProvider.bookListModel.result[index]
-                                      .categoryName,
+                                  _bookList[index].categoryName!,
                                   textAlign: TextAlign.center,
                                   maxLines: 3,
                                   style: TextStyle(
@@ -136,11 +137,7 @@ class _BookListPageState extends State<BookListPage> {
                           'কোন বই নেই!',
                           style: TextStyle(
                               color: themeProvider.appBarTitleColor()),
-                        ))
-                  : Center(
-                      child: Text('কোন বই নেই!',
-                          style: TextStyle(
-                              color: themeProvider.appBarTitleColor()))));
+                        )));
 
   /// custom app bar
   Container _customAppBar(Size size, ThemeProvider themeProvider) => Container(

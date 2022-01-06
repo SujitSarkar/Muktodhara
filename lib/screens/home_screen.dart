@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -16,7 +17,8 @@ import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final String categoryId;
-  const Home({Key? key, required this.categoryId}) : super(key: key);
+  final List<dynamic> poemBookList;
+  const Home({Key? key, required this.categoryId,required this.poemBookList}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
@@ -28,21 +30,31 @@ class _HomeState extends State<Home> {
   late ScrollController _scrollController;
   int _count = 0;
   bool _loading = false;
-  List<dynamic> _poemBookList = [];
   List<dynamic> _poemList = [];
   List<dynamic> _searchedPoemList = [];
 
-  Future _customInit(ApiProvider apiProvider, ThemeProvider themeProvider) async {
+  Future _customInit(ApiProvider apiProvider, ThemeProvider themeProvider,DatabaseHelper databaseHelper) async {
     print(widget.categoryId);
-
     _count++;
-    _poemBookList = apiProvider.bookListModel.result;
     setState(() => _loading = true);
-    await apiProvider.getBookPoems(widget.categoryId, themeProvider).then((value) => setState(() {
-      _loading = false;
-      _poemList = apiProvider.book.result;
+    await apiProvider.checkConnectivity();
+
+    if(apiProvider.connected){
+      await apiProvider.getBookPoems(widget.categoryId, themeProvider).then((value) => setState(() {
+        _poemList = apiProvider.book.result;
+        _searchedPoemList = _poemList;
+        _loading = false;
+      }));
+      await databaseHelper.storeAllPoemsToOffline(_poemList, widget.categoryId);
+    }else{
+      setState(() => _loading = true);
+      await databaseHelper.getOfflinePoemList(widget.categoryId);
+      _poemList = databaseHelper.allOfflinePoemList;
       _searchedPoemList = _poemList;
-    }));
+      _loading = false;
+      setState((){});
+    }
+
   }
 
   void _searchMember(String searchItem) {
@@ -77,7 +89,8 @@ class _HomeState extends State<Home> {
     final DatabaseHelper databaseHelper = Provider.of<DatabaseHelper>(context);
     final Size size = MediaQuery.of(context).size;
     themeProvider.changeStatusBarTheme();
-    if(_count == 0) _customInit(apiProvider, themeProvider);
+
+    if(_count == 0) _customInit(apiProvider, themeProvider,databaseHelper);
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeProvider.screenBackgroundColor(),
@@ -116,7 +129,7 @@ class _HomeState extends State<Home> {
       },
       child: _loading
           ? SpinKitDualRing(color: themeProvider.spinKitColor(), lineWidth: 4, size: 40,)
-       : apiProvider.book != null? ListView.builder(
+          : apiProvider.book != null? ListView.builder(
           controller: _scrollController,
           itemCount: _searchedPoemList.length,
           shrinkWrap: true,
@@ -172,7 +185,7 @@ class _HomeState extends State<Home> {
           color: Colors.amberAccent,
           height: size.width * .2,
           child: InfiniteCarousel.builder(
-            itemCount: _poemBookList.length,
+            itemCount: widget.poemBookList.length,
             itemExtent: 120,
             center: true,
             anchor: 0.0,
@@ -181,9 +194,12 @@ class _HomeState extends State<Home> {
             loop: true,
             itemBuilder: (context, itemIndex, realIndex) {
               return GestureDetector(onTap: () async {
-                apiProvider.setSelectedBook(SelectedBook(bookImage: _poemBookList[itemIndex].catImage!, bookName: _poemBookList[itemIndex].categoryName!));
+                apiProvider.setSelectedBook(SelectedBook(bookImage: widget.poemBookList[itemIndex].catImage!,
+                    bookName: widget.poemBookList[itemIndex].categoryName!));
                 setState(() => _loading = true);
-                await apiProvider.getBookPoems(_poemBookList[itemIndex].categoryId!, themeProvider).then((value) => setState(() {
+                await apiProvider.getBookPoems(
+                    widget.poemBookList[itemIndex].categoryId!,
+                    themeProvider).then((value) => setState(() {
                   _loading = false;
                   _poemList = apiProvider.book.result;
                   _searchedPoemList = _poemList;
@@ -196,16 +212,18 @@ class _HomeState extends State<Home> {
                       SizedBox(
                           width: size.width * .06,
                           height: size.width * .08,
-                          child: CachedNetworkImage(
-                            imageUrl: _poemBookList[itemIndex].catImage!,
+                          child: apiProvider.connected? CachedNetworkImage(
+                            imageUrl: widget.poemBookList[itemIndex].catImage!,
                             placeholder: (context, url) => Icon(Icons.image, color: Colors.grey.shade400),
                             errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                             fit: BoxFit.fill,
-                          )),
-                      SizedBox(height: size.width*.01,),
+                          ):Image.memory(base64Decode(widget.poemBookList[itemIndex].catImage!),
+                            fit: BoxFit.fill)),
+                      SizedBox(height: size.width*.01),
+
                       Text(
-                        _poemBookList[itemIndex].categoryName!,
+                        widget.poemBookList[itemIndex].categoryName!,
                         style:  TextStyle(
                             color: Colors.black,
                             fontSize: size.width*.03
@@ -232,13 +250,13 @@ class _HomeState extends State<Home> {
                 SizedBox(
                     width: size.width * .06,
                     height: size.width * .08,
-                    child: CachedNetworkImage(
+                    child:apiProvider.connected? CachedNetworkImage(
                       imageUrl: apiProvider.selectedBook.bookImage,
                       placeholder: (context, url) => Icon(Icons.image, color: Colors.grey.shade400),
                       errorWidget: (context, url, error) =>
                       const Icon(Icons.error),
                       fit: BoxFit.fill,
-                    )),
+                    ):Image.memory(base64Decode(apiProvider.selectedBook.bookImage),fit: BoxFit.fill)),
                 SizedBox(
                   height: size.width * .01,
                 ),

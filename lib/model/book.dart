@@ -7,15 +7,15 @@ class Book {
     this.result,
   });
 
-  List<Result>? result;
+  List<PoemModel>? result;
 
   factory Book.fromJson(Map<String, dynamic> json) => Book(
-    result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
+    result: List<PoemModel>.from(json["result"].map((x) => PoemModel.fromJson(x))),
   );
 }
 
-class Result {
-  Result({
+class PoemModel {
+  PoemModel({
     this.bookId,
     this.postId,
     this.poemName,
@@ -29,7 +29,7 @@ class Result {
   dynamic firstLine;
   String? poem;
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
+  factory PoemModel.fromJson(Map<String, dynamic> json) => PoemModel(
     bookId: json["book_id"],
     postId: json["post_id"],
     poemName: json["poem_name"],
