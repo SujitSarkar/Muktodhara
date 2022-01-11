@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mukto_dhara/model/book.dart';
 import 'package:mukto_dhara/model/book_list_model.dart';
 import 'package:mukto_dhara/model/favourite_poem_model.dart';
 import 'package:mukto_dhara/offline/model/book_list_model.dart';
@@ -140,6 +139,7 @@ class DatabaseHelper extends ChangeNotifier{
     for (int i = 0; i < count; i++) {
       _allOfflinePoemList.add(FavouritePoemModel.fromMapObject(offlinePoemMapList[i]));
     }
+    //print('Offline List: ${_allOfflinePoemList.length}');
     notifyListeners();
   }
 
@@ -151,19 +151,20 @@ class DatabaseHelper extends ChangeNotifier{
   }
 
   ///Offline poem Delete operation
-  Future<int> deleteOfflinePoem() async {
+  Future<int> deleteOfflinePoem(String bookID) async {
     Database db = await database;
-    var result = await db.delete(allOfflinePoemsTable);
+    var result = await db.delete(allOfflinePoemsTable,where: '$colBookId = ?',
+        whereArgs: [bookID]);
     return result;
   }
 
   ///Store All poem List To Offline
   Future<void> storeAllPoemsToOffline(List<dynamic> poemList,String bookID)async{
-    await getOfflinePoemList(bookID);
-    await deleteOfflinePoem();
+    //await getOfflinePoemList(bookID);
+    await deleteOfflinePoem(bookID);
 
-    print('List: ${poemList.length}');
-    Future.forEach(poemList, (dynamic element)async{
+    //print('List: ${poemList.length}');
+    await Future.forEach(poemList, (dynamic element)async{
       FavouritePoemModel poemModel = FavouritePoemModel(
           element.postId,
           element.poemName,
@@ -171,11 +172,10 @@ class DatabaseHelper extends ChangeNotifier{
           element.poem,
           element.bookId);
       await insertOfflinePoem(poemModel);
-    });
-
+      });
     await getOfflinePoemList(bookID);
 
-    //print('Offline Poem List: ${_allOfflinePoemList}');
+    //print('Offline Poem List: ${_allOfflinePoemList.length}');
   }
 
   ///...................................................................
@@ -199,7 +199,7 @@ class DatabaseHelper extends ChangeNotifier{
       _offlineBookList.add(OfflineBookModel.fromMapObject(allBookMapList[i]));
     }
     notifyListeners();
-    print('Offline Book list: ${_offlineBookList.length}');
+    //print('Offline Book list: ${_offlineBookList.length}');
   }
 
   ///Book Insert operation
@@ -222,7 +222,7 @@ class DatabaseHelper extends ChangeNotifier{
   ///Store All Book List To Offline
   Future<void> storeAllBookToOffline(List<Result> bookList)async{
     await deleteBookList();
-    Future.forEach(bookList, (Result element)async{
+    await Future.forEach(bookList, (Result element)async{
       final ByteData imageData = await NetworkAssetBundle(Uri.parse(element.catImage!)).load("");
       final Uint8List bytes = imageData.buffer.asUint8List();
       final String base64Image = base64.encode(bytes);

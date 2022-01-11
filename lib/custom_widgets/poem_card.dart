@@ -8,14 +8,14 @@ import 'package:provider/provider.dart';
 import 'package:wakelock/wakelock.dart';
 
 class PoemCard extends StatelessWidget {
-  String? poemId;
-  String poemName;
-  String poemFirstLine;
-  String poem;
-  String bookId;
-  IconData? iconData;
+  final String? poemId;
+  final String poemName;
+  final String poemFirstLine;
+  final String poem;
+  final String bookId;
+  final IconData? iconData;
 
-  PoemCard(
+  const PoemCard(
       {Key? key,
         required this.poemId,
         required this.poemName,

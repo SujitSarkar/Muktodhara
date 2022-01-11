@@ -34,7 +34,6 @@ class _HomeState extends State<Home> {
   List<dynamic> _searchedPoemList = [];
 
   Future _customInit(ApiProvider apiProvider, ThemeProvider themeProvider,DatabaseHelper databaseHelper) async {
-    print(widget.categoryId);
     _count++;
     setState(() => _loading = true);
     await apiProvider.checkConnectivity();
@@ -49,12 +48,12 @@ class _HomeState extends State<Home> {
     }else{
       setState(() => _loading = true);
       await databaseHelper.getOfflinePoemList(widget.categoryId);
-      _poemList = databaseHelper.allOfflinePoemList;
-      _searchedPoemList = _poemList;
-      _loading = false;
-      setState((){});
+      setState((){
+        _poemList = databaseHelper.allOfflinePoemList;
+        _searchedPoemList = _poemList;
+        _loading = false;
+      });
     }
-
   }
 
   void _searchMember(String searchItem) {
@@ -103,7 +102,7 @@ class _HomeState extends State<Home> {
         body: _bodyUI(size, themeProvider, apiProvider, databaseHelper),
         bottomNavigationBar: ScrollToHide(
             scrollController: _scrollController,
-            child: _customBottomNavigation(size, apiProvider, themeProvider)),
+            child: _customBottomNavigation(size, apiProvider, themeProvider,databaseHelper)),
       ),
     );
   }
@@ -128,8 +127,8 @@ class _HomeState extends State<Home> {
         return true;
       },
       child: _loading
-          ? SpinKitDualRing(color: themeProvider.spinKitColor(), lineWidth: 4, size: 40,)
-          : apiProvider.book != null? ListView.builder(
+          ? SpinKitDualRing(color: themeProvider.spinKitColor(), lineWidth: 4, size: 40)
+          : _searchedPoemList.isNotEmpty? ListView.builder(
           controller: _scrollController,
           itemCount: _searchedPoemList.length,
           shrinkWrap: true,
@@ -141,7 +140,7 @@ class _HomeState extends State<Home> {
               poemFirstLine: _searchedPoemList[index].firstLine ?? '',
               poem: _searchedPoemList[index].poem,
               bookId: _searchedPoemList[index].bookId,
-              iconData: databaseHelper.favouritePoemIdList.contains(apiProvider.book.result[index].postId) ? Icons.bookmark : LineAwesomeIcons.bookmark,
+              iconData: databaseHelper.favouritePoemIdList.contains(_searchedPoemList[index].postId) ? Icons.bookmark : LineAwesomeIcons.bookmark,
             );
           }) :  Center(child: Text('কোন কবিতা নেই', style: TextStyle(color: themeProvider.appBarTitleColor()),)),
     );
@@ -177,7 +176,7 @@ class _HomeState extends State<Home> {
   }
 
   /// custom bottom navigation
-  Widget _customBottomNavigation(Size size, ApiProvider apiProvider, ThemeProvider themeProvider) {
+  Widget _customBottomNavigation(Size size, ApiProvider apiProvider, ThemeProvider themeProvider,DatabaseHelper databaseHelper) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -197,13 +196,24 @@ class _HomeState extends State<Home> {
                 apiProvider.setSelectedBook(SelectedBook(bookImage: widget.poemBookList[itemIndex].catImage!,
                     bookName: widget.poemBookList[itemIndex].categoryName!));
                 setState(() => _loading = true);
-                await apiProvider.getBookPoems(
-                    widget.poemBookList[itemIndex].categoryId!,
-                    themeProvider).then((value) => setState(() {
-                  _loading = false;
-                  _poemList = apiProvider.book.result;
-                  _searchedPoemList = _poemList;
-                }));
+                await apiProvider.checkConnectivity();
+                if(apiProvider.connected){
+                  await apiProvider.getBookPoems(
+                      widget.poemBookList[itemIndex].categoryId!,
+                      themeProvider).then((value) => setState(() {
+                    _loading = false;
+                    _poemList = apiProvider.book.result;
+                    _searchedPoemList = _poemList;
+                  }));
+                }else{
+                  await databaseHelper.getOfflinePoemList( widget.poemBookList[itemIndex].categoryId!).then((value){
+                    setState(() {
+                      _loading = false;
+                      _poemList = databaseHelper.allOfflinePoemList;
+                      _searchedPoemList = _poemList;
+                    });
+                  });
+                }
               },
                 child: Padding(
                   padding:  EdgeInsets.only(top: size.width*.03),
