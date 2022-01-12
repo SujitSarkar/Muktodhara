@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
-import 'package:mukto_dhara/screens/home_screen.dart';
 import 'package:mukto_dhara/screens/splash_screen.dart';
-import 'package:mukto_dhara/variables/color_variables.dart';
 import 'package:mukto_dhara/variables/theme_data.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

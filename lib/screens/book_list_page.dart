@@ -25,6 +25,8 @@ class _BookListPageState extends State<BookListPage> {
   Future _customInit(ApiProvider apiProvider, DatabaseHelper databaseHelper,
       ThemeProvider themeProvider) async {
     _count++;
+    // await apiProvider.checkConnectivity();
+
     if(apiProvider.connected){
       if (apiProvider.bookListModel == null) {
         setState(() => _loading = true);
@@ -60,6 +62,7 @@ class _BookListPageState extends State<BookListPage> {
     final Size size = MediaQuery.of(context).size;
     themeProvider.changeStatusBarTheme();
     if (_count == 0) _customInit(apiProvider, databaseHelper, themeProvider);
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeProvider.screenBackgroundColor(),

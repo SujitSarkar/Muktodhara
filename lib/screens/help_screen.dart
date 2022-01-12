@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
-import 'package:mukto_dhara/variables/color_variables.dart';
 import 'package:provider/provider.dart';
 
 class HelpScreen extends StatelessWidget {
@@ -94,7 +92,6 @@ class HelpScreen extends StatelessWidget {
     return Padding(
       padding:  EdgeInsets.symmetric(vertical: size.width*.03, horizontal: size.width*.04),
       child: Text(
-
         text,
         textAlign: TextAlign.justify,
         style: TextStyle(

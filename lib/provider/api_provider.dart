@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/model/book.dart';
 import 'package:mukto_dhara/model/book_list_model.dart';
@@ -9,6 +10,9 @@ import 'package:mukto_dhara/model/selected_book_model.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 
 class ApiProvider extends ChangeNotifier{
+
+  static const String baseURL='https://sohelmahroof.com.bd/api/';
+
   BookListModel? _bookListModel;
   Book? _book;
   SelectedBook? _selectedBook;
@@ -26,7 +30,7 @@ class ApiProvider extends ChangeNotifier{
   
   Future <void> getBookList(ThemeProvider themeProvider) async {
     try{
-      var response = await http.get(Uri.parse('http://sohelmahroof.com.bd/api/poem.php'));
+      var response = await http.get(Uri.parse(baseURL+'poem.php'));
       if(response.statusCode == 200){
         _bookListModel = bookListModelFromJson(response.body);
         notifyListeners();
@@ -41,7 +45,7 @@ class ApiProvider extends ChangeNotifier{
   }
 
   Future <void> getBookPoems(String bookId, ThemeProvider themeProvider) async {
-    String baseUrl = 'https://sohelmahroof.com.bd/api/poem_list.php?book=$bookId';
+    String baseUrl = baseURL+'poem_list.php?book=$bookId';
     try{
       var response = await http.get(Uri.parse(baseUrl));
       if(response.statusCode == 200){
@@ -66,6 +70,28 @@ class ApiProvider extends ChangeNotifier{
       connected=false;
     }
     notifyListeners();
+  }
+
+  Future<String?> getPageSettingResponse(dynamic pageValue)async{
+    String url;
+    if(pageValue==3){
+      url= baseURL+'privacy.php';
+    }else if(pageValue==4){
+      url= baseURL+'terms.php';
+    }else{
+      url= baseURL+'copyright.php';
+    }
+    try{
+      var response = await http.get(Uri.parse(url));
+      if(response.statusCode==200){
+        var jsonData = jsonDecode(response.body);
+        return jsonData['result'][0]['page_description'];
+      }
+    }catch(error){
+      if(kDebugMode){
+        print(error.toString());
+      }
+    }
   }
 
 

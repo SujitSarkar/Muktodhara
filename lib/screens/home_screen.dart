@@ -36,7 +36,7 @@ class _HomeState extends State<Home> {
   Future _customInit(ApiProvider apiProvider, ThemeProvider themeProvider,DatabaseHelper databaseHelper) async {
     _count++;
     setState(() => _loading = true);
-    await apiProvider.checkConnectivity();
+    //await apiProvider.checkConnectivity();
 
     if(apiProvider.connected){
       await apiProvider.getBookPoems(widget.categoryId, themeProvider).then((value) => setState(() {
@@ -67,7 +67,6 @@ class _HomeState extends State<Home> {
           .toList();
     });
   }
-
 
   @override
   void initState() {

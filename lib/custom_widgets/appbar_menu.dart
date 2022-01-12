@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/change_theme.dart';
 import 'package:mukto_dhara/screens/help_screen.dart';
+import 'package:mukto_dhara/screens/pase_settings.dart';
 import 'package:mukto_dhara/screens/refine_screen.dart';
 import 'package:provider/provider.dart';
 
 class AppBarMenu extends StatelessWidget {
-  Color iconColor;
-  AppBarMenu({Key? key, required this.iconColor}) : super(key: key);
+  final Color iconColor;
+  const AppBarMenu({Key? key, required this.iconColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +24,20 @@ class AppBarMenu extends StatelessWidget {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const HelpScreen()));
           }
-          if (value == 1) {
+          else if (value == 1) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const RefineScreen()));
           }
-          if (value == 2) {
+          else if (value == 2) {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const ChangeThemePage()));
+          }else if(value==3||value==4||value==5){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context)=>PageSettings(pageValue: value)));
           }
         },
         itemBuilder: (context) => [
@@ -39,6 +45,8 @@ class AppBarMenu extends StatelessWidget {
           _customAppBarMenuItem(themeProvider, 'সমৃদ্ধ ও সংশোধনা', 1),
           _customAppBarMenuItem(themeProvider, 'থিম পরিবর্তন করুন', 2),
           _customAppBarMenuItem(themeProvider, 'গোপনীয়তা নীতি', 3),
+          _customAppBarMenuItem(themeProvider, 'সাধারণ নিয়ম ও শর্তাবলী', 4),
+          _customAppBarMenuItem(themeProvider, 'কপিরাইট',5),
         ]);
   }
 
