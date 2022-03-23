@@ -45,8 +45,8 @@ class _ReadPoemState extends State<ReadPoem> {
         actions: [
           IconButton(
               onPressed: () {
-                 // Share.share('https://play.google.com/store/apps/details?id=com.muktomart.mukto_mart');
-                showToast('This feature is comming soon', themeProvider);
+                 Share.share('https://play.google.com/store/apps/details?id=com.glamworlditltd.muktodhara');
+                //showToast('This feature is comming soon', themeProvider);
               },
               icon: Icon(
                 Icons.share_outlined,
