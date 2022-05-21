@@ -46,9 +46,11 @@ class ApiProvider extends ChangeNotifier{
 
   Future <void> getBookPoems(String bookId, ThemeProvider themeProvider) async {
     String baseUrl = baseURL+'poem_list.php?book=$bookId';
+    print(baseUrl);
     try{
       var response = await http.get(Uri.parse(baseUrl));
       if(response.statusCode == 200){
+        print(response.body);
         _book = bookFromJson(response.body);
         notifyListeners();
       }
