@@ -46,19 +46,18 @@ class ApiProvider extends ChangeNotifier{
 
   Future <void> getBookPoems(String bookId, ThemeProvider themeProvider) async {
     String baseUrl = baseURL+'poem_list.php?book=$bookId';
-    print(baseUrl);
     try{
       var response = await http.get(Uri.parse(baseUrl));
       if(response.statusCode == 200){
-        print(response.body);
         _book = bookFromJson(response.body);
         notifyListeners();
       }
     }on SocketException{
       showToast('No internet connection!', themeProvider);
     }catch(error){
-      // ignore: avoid_print
-      print('getting book poems error: $error');
+      if (kDebugMode) {
+        print('getting book poems error: $error');
+      }
     }
   }
 
@@ -92,8 +91,10 @@ class ApiProvider extends ChangeNotifier{
     }catch(error){
       if(kDebugMode){
         print(error.toString());
+        return null;
       }
     }
+    return null;
   }
 
 

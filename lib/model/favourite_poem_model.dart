@@ -5,8 +5,9 @@ class FavouritePoemModel{
   String? _firstLine;
   String? _poem;
   String? _bookId;
+  String? _poetName;
 
-  FavouritePoemModel(this._postId, this._poemName,this._firstLine,this._poem,this._bookId);
+  FavouritePoemModel(this._postId, this._poemName,this._firstLine,this._poem,this._bookId,this._poetName);
 
   int? get id => _id;
   String get postId => _postId!;
@@ -14,6 +15,7 @@ class FavouritePoemModel{
   String get firstLine => _firstLine!;
   String get poem => _poem!;
   String get bookId => _bookId!;
+  String get poetName => _poetName!;
 
   //Convert a note object to mop object
   Map<String, dynamic> toMap() {
@@ -25,6 +27,7 @@ class FavouritePoemModel{
     map['firstLine'] = _firstLine;
     map['poem'] = _poem;
     map['bookId'] = _bookId;
+    map['poetName'] = _poetName;
     return map;
   }
 
@@ -36,5 +39,6 @@ class FavouritePoemModel{
     _firstLine = map['firstLine'];
     _poem = map['poem'];
     _bookId = map['bookId'];
+    _poetName = map['poetName'];
   }
 }

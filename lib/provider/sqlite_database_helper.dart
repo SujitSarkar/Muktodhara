@@ -34,6 +34,7 @@ class DatabaseHelper extends ChangeNotifier{
   String colPoemName = 'poemName';
   String colFirstLine = 'firstLine';
   String colPoem = 'poem';
+  String colPoetName = 'poetName';
   String colBookId = 'bookId';
 
   ///All bool column
@@ -52,11 +53,11 @@ class DatabaseHelper extends ChangeNotifier{
   void _createDB(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $favouritePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
-            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT, $colPoetName TEXT)');
 
     await db.execute(
         'CREATE TABLE $allOfflinePoemsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
-            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT)');
+            '$colPostId TEXT, $colPoemName TEXT, $colFirstLine TEXT, $colPoem TEXT, $colBookId TEXT, $colPoetName TEXT)');
 
     await db.execute(
         'CREATE TABLE $allBookTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, '
@@ -170,7 +171,8 @@ class DatabaseHelper extends ChangeNotifier{
           element.poemName,
           element.firstLine??'',
           element.poem,
-          element.bookId);
+          element.bookId,
+          element.poetName);
       await insertOfflinePoem(poemModel);
       });
     await getOfflinePoemList(bookID);

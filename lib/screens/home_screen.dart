@@ -138,6 +138,7 @@ class _HomeState extends State<Home> {
               poemName: _searchedPoemList[index].poemName,
               poemFirstLine: _searchedPoemList[index].firstLine ?? '',
               poem: _searchedPoemList[index].poem,
+              poetName: _searchedPoemList[index].poetName,
               bookId: _searchedPoemList[index].bookId,
               iconData: databaseHelper.favouritePoemIdList.contains(_searchedPoemList[index].postId) ? Icons.bookmark : LineAwesomeIcons.bookmark,
             );

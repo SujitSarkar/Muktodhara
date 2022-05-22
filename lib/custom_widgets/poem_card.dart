@@ -13,6 +13,7 @@ class PoemCard extends StatelessWidget {
   final String poemFirstLine;
   final String poem;
   final String bookId;
+  final String poetName;
   final IconData? iconData;
 
   const PoemCard(
@@ -22,6 +23,7 @@ class PoemCard extends StatelessWidget {
       required this.poemFirstLine,
       required this.iconData,
         required this.poem,
+        required this.poetName,
         required this.bookId
      }) : super(key: key);
 
@@ -33,7 +35,7 @@ class PoemCard extends StatelessWidget {
     return InkWell(
       onTap: (){
         Wakelock.enable();
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poem: poem,poemName: poemName)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ReadPoem(poem: poem,poemName: poemName,poetName: poetName)));
       },
       child: Padding(
         padding:  EdgeInsets.symmetric(horizontal: size.width*.03),
@@ -61,7 +63,7 @@ class PoemCard extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine,poem,bookId);
+                    FavouritePoemModel favouritePoem = FavouritePoemModel(poemId, poemName, poemFirstLine,poem,bookId,poetName);
                     await databaseHelper.insertFavouritePoem(favouritePoem);
                     showToast('কবিতাটি পছন্দের তালিকায় যুক্ত হয়েছে', themeProvider);
                   },

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +10,8 @@ import 'package:wakelock/wakelock.dart';
 class ReadPoem extends StatefulWidget {
   final String poem;
   final String poemName;
-  const ReadPoem({Key? key, required this.poem, required this.poemName}) : super(key: key);
+  final String poetName;
+  const ReadPoem({Key? key, required this.poem, required this.poemName,required this.poetName}) : super(key: key);
 
   @override
   State<ReadPoem> createState() => _ReadPoemState();
@@ -46,7 +45,6 @@ class _ReadPoemState extends State<ReadPoem> {
           IconButton(
               onPressed: () {
                  Share.share('https://play.google.com/store/apps/details?id=com.glamworlditltd.muktodhara');
-                //showToast('This feature is comming soon', themeProvider);
               },
               icon: Icon(
                 Icons.share_outlined,
@@ -77,11 +75,21 @@ class _ReadPoemState extends State<ReadPoem> {
                   fontSize: size.width * .07,
                   fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: size.width*.04,),
+            SizedBox(height: size.width*.02),
+
+            /// poet name
+            Text(
+              widget.poetName,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: themeProvider.poemNameColor(),
+                  fontSize: size.width * .05),
+            ),
+            SizedBox(height: size.width*.04),
 
             /// full poem
             Html(
-              data: widget.poem,
+              data: """<p>${widget.poem}</p>""",
               style: {
                 "p": Style(
                   color: themeProvider.poemNameColor(),
