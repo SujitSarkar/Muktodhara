@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/custom_widgets/toggle_button.dart';
+import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,12 +15,14 @@ class ChangeThemePage extends StatefulWidget{
 class _ChangeThemePageState extends State<ChangeThemePage> with SingleTickerProviderStateMixin{
   late AnimationController _animationController;
   final List<String> values= ['Light', 'Dark'];
+  final AdController adController = AdController();
 
   @override
   void initState() {
     _animationController =
         AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
     super.initState();
+    adController.loadInterstitialAd();
   }
   // function to toggle circle animation
   changeThemeMode(bool theme) {
@@ -29,6 +31,12 @@ class _ChangeThemePageState extends State<ChangeThemePage> with SingleTickerProv
     } else {
       _animationController.reverse(from: 1.0);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
   }
 
 

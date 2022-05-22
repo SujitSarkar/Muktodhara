@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class RefineScreen extends StatelessWidget {
+import '../provider/ad_controller.dart';
+
+class RefineScreen extends StatefulWidget {
   static const String text =
       'আবৃতি শিল্পী ও কবিতা প্রেমীদের জন্য ভালো লাগার মতো পরিচিত ও নতুন কবিতা গুলো এক সাথে হাতের নাগালে যেন পেয়ে যাবেন তার জন্যই এই প্রয়াস। '
       'কবিতা গুলোতে সংগ্রহের উপাত্ত ও কম্পোজে কোন কোন ভুল দৃষ্টি এড়িয়েছে, এক্ষেত্রে ক্ষমা প্রার্থনা সহ সহযোগিতা কামনা করছি। যদি কোন ভুল চোখে পরে এবং '
@@ -13,6 +16,28 @@ class RefineScreen extends StatelessWidget {
   static const String facebookLink = 'facebook.com/abcd';
 
   const RefineScreen({Key? key}) : super(key: key);
+
+  @override
+  State<RefineScreen> createState() => _RefineScreenState();
+}
+
+class _RefineScreenState extends State<RefineScreen> {
+
+  final AdController adController = AdController();
+
+  @override
+  void initState() {
+    super.initState();
+    ///Initialize Ad
+    adController.loadInterstitialAd();
+    adController.loadBannerAdd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +73,12 @@ class RefineScreen extends StatelessWidget {
         ],
       ),
       body: _bodyUI(size, themeProvider),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: adController.bannerAd!),
+        width: MediaQuery.of(context).size.width,
+        height: adController.bannerAd!.size.height.toDouble(),
+      ),
     );
   }
 
@@ -59,15 +90,15 @@ class RefineScreen extends StatelessWidget {
           Padding(
             padding:  EdgeInsets.symmetric(vertical: size.width*.03, horizontal: size.width*.04),
             child: Text(
-              text,
+              RefineScreen.text,
               style: TextStyle(
                   color: themeProvider.bodyTextColor(),
                   fontSize: size.width * .04),
             ),
           ),
 
-          _customSelectedText(size, 'Email', email, themeProvider),
-          _customSelectedText(size, 'Facebook', facebookLink, themeProvider),
+          _customSelectedText(size, 'Email', RefineScreen.email, themeProvider),
+          _customSelectedText(size, 'Facebook', RefineScreen.facebookLink, themeProvider),
         ],
       ),
     );

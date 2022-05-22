@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,21 @@ class ReadPoem extends StatefulWidget {
 }
 
 class _ReadPoemState extends State<ReadPoem> {
+  final AdController adController = AdController();
+
+  @override
+  void initState() {
+    super.initState();
+    ///Initialize Ad
+    adController.loadInterstitialAd();
+    adController.loadBannerAdd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
+  }
 
 
   @override
@@ -53,6 +70,12 @@ class _ReadPoemState extends State<ReadPoem> {
         ],
       ),
       body: _bodyUI(size, themeProvider, apiProvider),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: adController.bannerAd!),
+        width: MediaQuery.of(context).size.width,
+        height: adController.bannerAd!.size.height.toDouble(),
+      ),
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mukto_dhara/custom_widgets/appbar_menu.dart';
 import 'package:mukto_dhara/model/selected_book_model.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
@@ -9,6 +10,8 @@ import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/home_screen.dart';
 import 'package:provider/provider.dart';
+
+import '../provider/ad_controller.dart';
 
 class BookListPage extends StatefulWidget {
   const BookListPage({Key? key}) : super(key: key);
@@ -20,27 +23,32 @@ class BookListPage extends StatefulWidget {
 class _BookListPageState extends State<BookListPage> {
   int _count = 0;
   bool _loading = false;
-  List<dynamic> _bookList=[];
+  List<dynamic> _bookList = [];
+  final AdController adController = AdController();
 
   Future _customInit(ApiProvider apiProvider, DatabaseHelper databaseHelper,
       ThemeProvider themeProvider) async {
     _count++;
     // await apiProvider.checkConnectivity();
 
-    if(apiProvider.connected){
+    if (apiProvider.connected) {
       if (apiProvider.bookListModel == null) {
         setState(() => _loading = true);
         await apiProvider.getBookList(themeProvider);
-        setState((){
-          _bookList=apiProvider.bookListModel.result;
-        _loading = false;});
-      }else{
-        setState((){
-          _bookList=apiProvider.bookListModel.result;});
+        setState(() {
+          _bookList = apiProvider.bookListModel.result;
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _bookList = apiProvider.bookListModel.result;
+        });
       }
-    }else{
+    } else {
       setState(() => _loading = true);
-      databaseHelper.offlineBookList.isEmpty? await databaseHelper.getOfflineBookList():null;
+      databaseHelper.offlineBookList.isEmpty
+          ? await databaseHelper.getOfflineBookList()
+          : null;
       setState(() => _loading = false);
       _bookList = databaseHelper.offlineBookList;
       setState(() {});
@@ -48,10 +56,25 @@ class _BookListPageState extends State<BookListPage> {
     databaseHelper.getFavouritePoems();
 
     ///Store Book to Offline
-    if(apiProvider.connected && apiProvider.bookListModel !=null && apiProvider.bookListModel.result.isNotEmpty){
-      await databaseHelper.storeAllBookToOffline(apiProvider.bookListModel.result);
+    if (apiProvider.connected &&
+        apiProvider.bookListModel != null &&
+        apiProvider.bookListModel.result.isNotEmpty) {
+      await databaseHelper
+          .storeAllBookToOffline(apiProvider.bookListModel.result);
       //Image.memory(base64Decode(base64Image));
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    adController.loadBannerAdd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.disposeAllAd();
   }
 
   @override
@@ -76,49 +99,54 @@ class _BookListPageState extends State<BookListPage> {
   }
 
   /// body
-  Widget _bodyUI(Size size, ApiProvider apiProvider, ThemeProvider themeProvider) =>
+  Widget _bodyUI(
+          Size size, ApiProvider apiProvider, ThemeProvider themeProvider) =>
       _loading
           ? SpinKitDualRing(
-              color: themeProvider.spinKitColor(),
-              lineWidth: 4,
-              size: 40)
-          : Padding(
-              padding: EdgeInsets.all(size.width * .05),
-              child:_bookList.isNotEmpty
-                      ? GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  mainAxisSpacing: size.width * .01,
-                                  crossAxisSpacing: size.width * .02,
-                                childAspectRatio: 0.42
-                              ),
+              color: themeProvider.spinKitColor(), lineWidth: 4, size: 40)
+          : Column(
+              children: [
+                _bookList.isNotEmpty
+                    ? Expanded(
+                      child: GridView.builder(
+                          padding: EdgeInsets.all(size.width * .05),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: size.width * .01,
+                              crossAxisSpacing: size.width * .02,
+                              childAspectRatio: 0.42),
                           itemCount: _bookList.length,
                           itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
                               apiProvider.setSelectedBook(SelectedBook(
                                   bookImage: _bookList[index].catImage!,
                                   bookName: _bookList[index].categoryName!));
-                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                  Home(categoryId: _bookList[index].categoryId!,poemBookList: _bookList)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Home(
+                                          categoryId:
+                                              _bookList[index].categoryId!,
+                                          poemBookList: _bookList)));
                             },
                             child: Column(
                               children: [
                                 /// book image
-                                apiProvider.connected? CachedNetworkImage(
-                                  imageUrl: _bookList[index].catImage!,
-                                  placeholder: (context, url) => Padding(
-                                    padding: EdgeInsets.all(size.width * .04),
-                                    child: Icon(
-                                      Icons.image,
-                                      color: Colors.grey.shade400,
-                                      size: size.width * .2,
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                  fit: BoxFit.cover,
-                                ):Image.memory(base64Decode(_bookList[index].catImage!)),
+                                apiProvider.connected
+                                    ? CachedNetworkImage(
+                                        imageUrl: _bookList[index].catImage!,
+                                        placeholder: (context, url) => Padding(
+                                          padding:
+                                              EdgeInsets.all(size.width * .04),
+                                          child: Icon(
+                                            Icons.image,
+                                            color: Colors.grey.shade400,
+                                            size: size.width * .2,
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.memory(
+                                        base64Decode(_bookList[index].catImage!)),
                                 SizedBox(height: size.width * .02),
 
                                 /// book name
@@ -134,13 +162,22 @@ class _BookListPageState extends State<BookListPage> {
                               ],
                             ),
                           ),
-                        )
-                      : Center(
-                          child: Text(
-                          'কোন বই নেই!',
-                          style: TextStyle(
-                              color: themeProvider.appBarTitleColor()),
-                        )));
+                        ),
+                    )
+                    : Center(
+                        child: Text(
+                        'কোন বই নেই!',
+                        style:
+                            TextStyle(color: themeProvider.appBarTitleColor()),
+                      )),
+                Container(
+                  alignment: Alignment.center,
+                  child: AdWidget(ad: adController.bannerAd!),
+                  width: MediaQuery.of(context).size.width,
+                  height: adController.bannerAd!.size.height.toDouble(),
+                )
+              ],
+            );
 
   /// custom app bar
   Container _customAppBar(Size size, ThemeProvider themeProvider) => Container(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/custom_classes/toast.dart';
 import 'package:mukto_dhara/custom_widgets/poem_card.dart';
 import 'package:mukto_dhara/model/favourite_poem_model.dart';
+import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   int _count = 0;
   bool _loading = false;
   List<FavouritePoemModel> _favouritePoems = [];
+  final AdController adController = AdController();
 
   Future _customInit(DatabaseHelper databaseHelper) async {
     _count++;
@@ -27,6 +30,20 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
       _loading = false;
       _favouritePoems = databaseHelper.favouritePoemList;
     }));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ///Initialize Ad
+    adController.loadInterstitialAd();
+    adController.loadBannerAdd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
   }
 
   @override
@@ -63,6 +80,12 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
           ];
         },
        body: _bodyUI(size, databaseHelper, themeProvider),
+      ),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: adController.bannerAd!),
+        width: MediaQuery.of(context).size.width,
+        height: adController.bannerAd!.size.height.toDouble(),
       ),
     );
   }

@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class HelpScreen extends StatelessWidget {
+class HelpScreen extends StatefulWidget {
   const HelpScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HelpScreen> createState() => _HelpScreenState();
+}
+
+class _HelpScreenState extends State<HelpScreen> {
+  final AdController adController = AdController();
+
+  @override
+  void initState() {
+    super.initState();
+    ///Initialize Ad
+    adController.loadInterstitialAd();
+    adController.loadBannerAdd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +54,12 @@ class HelpScreen extends StatelessWidget {
             )),
       ),
       body: _bodyUI(size, themeProvider),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: adController.bannerAd!),
+        width: MediaQuery.of(context).size.width,
+        height: adController.bannerAd!.size.height.toDouble(),
+      ),
     );
   }
 
@@ -67,7 +96,6 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-
   ///  custom  list tile designs
   Widget _customListTile(
       Size size, String text, IconData iconData, ThemeProvider themeProvider) {
@@ -85,7 +113,6 @@ class HelpScreen extends StatelessWidget {
       ),
     );
   }
-
 
   /// custom text design
   Widget _customText(Size size, String text, ThemeProvider themeProvider){

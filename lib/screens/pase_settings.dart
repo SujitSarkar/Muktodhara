@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/api_provider.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,7 @@ class _PageSettingsState extends State<PageSettings> {
   bool _isLoading = true;
   SharedPreferences? preferences;
   String bodyData = '';
+  final AdController adController = AdController();
 
   @override
   void initState() {
@@ -34,6 +37,10 @@ class _PageSettingsState extends State<PageSettings> {
       pageTitle = 'কপিরাইট';
     }
     _initializeData(apiProvider);
+
+    ///Initialize Ad
+    adController.loadInterstitialAd();
+    adController.loadBannerAdd();
   }
 
   Future<void> _initializeData(ApiProvider apiProvider) async {
@@ -70,6 +77,12 @@ class _PageSettingsState extends State<PageSettings> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    adController.showInterstitialAd();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
     final Size size = MediaQuery.of(context).size;
@@ -97,6 +110,12 @@ class _PageSettingsState extends State<PageSettings> {
           ? SpinKitDualRing(
               color: themeProvider.spinKitColor(), lineWidth: 4, size: 40)
           : _bodyUI(size, themeProvider),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: adController.bannerAd!),
+        width: MediaQuery.of(context).size.width,
+        height: adController.bannerAd!.size.height.toDouble(),
+      ),
     );
   }
 
