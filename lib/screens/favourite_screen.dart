@@ -54,7 +54,6 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
     final DatabaseHelper databaseHelper = Provider.of<DatabaseHelper>(context);
-    final ApiProvider apiProvider = Provider.of<ApiProvider>(context);
     final Size size = MediaQuery.of(context).size;
     if(_count == 0) _customInit(databaseHelper);
 
@@ -86,7 +85,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         },
        body: _bodyUI(size, databaseHelper, themeProvider),
       ),
-      bottomNavigationBar: apiProvider.connected? Container(
+      bottomNavigationBar: adController.bannerAd!=null? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,

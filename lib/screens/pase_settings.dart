@@ -115,7 +115,7 @@ class _PageSettingsState extends State<PageSettings> {
           ? SpinKitDualRing(
               color: themeProvider.spinKitColor(), lineWidth: 4, size: 40)
           : _bodyUI(size, themeProvider),
-      bottomNavigationBar: apiProvider.connected? Container(
+      bottomNavigationBar:adController.bannerAd!=null? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,

@@ -46,7 +46,6 @@ class _RefineScreenState extends State<RefineScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
-    final ApiProvider apiProvider = Provider.of<ApiProvider>(context);
     final Size size = MediaQuery.of(context).size;
 
     themeProvider.changeStatusBarTheme();
@@ -78,7 +77,7 @@ class _RefineScreenState extends State<RefineScreen> {
         ],
       ),
       body: _bodyUI(size, themeProvider),
-      bottomNavigationBar: apiProvider.connected? Container(
+      bottomNavigationBar: adController.bannerAd!=null? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,

@@ -61,7 +61,7 @@ class _HelpScreenState extends State<HelpScreen> {
             )),
       ),
       body: _bodyUI(size, themeProvider),
-      bottomNavigationBar: apiProvider.connected? Container(
+      bottomNavigationBar: adController.bannerAd!=null? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,

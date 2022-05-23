@@ -172,7 +172,7 @@ class _BookListPageState extends State<BookListPage> {
                         style:
                             TextStyle(color: themeProvider.appBarTitleColor()),
                       )),
-                if(apiProvider.connected) Container(
+                if(adController.bannerAd!=null) Container(
                   alignment: Alignment.center,
                   child: AdWidget(ad: adController.bannerAd!),
                   width: MediaQuery.of(context).size.width,

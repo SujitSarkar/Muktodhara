@@ -74,7 +74,7 @@ class _ReadPoemState extends State<ReadPoem> {
         ],
       ),
       body: _bodyUI(size, themeProvider, apiProvider),
-      bottomNavigationBar:apiProvider.connected? Container(
+      bottomNavigationBar: adController.bannerAd!=null? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,
