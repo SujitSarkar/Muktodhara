@@ -83,8 +83,7 @@ class _HomeState extends State<Home> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
-    if(ap.connected) adController.showInterstitialAd();
+    if(adController.interstitialAd!=null) adController.showInterstitialAd();
   }
 
   @override

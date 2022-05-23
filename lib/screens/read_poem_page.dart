@@ -36,8 +36,7 @@ class _ReadPoemState extends State<ReadPoem> {
   @override
   void dispose() {
     super.dispose();
-    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
-    if(ap.connected) adController.showInterstitialAd();
+    if(adController.interstitialAd!=null) adController.showInterstitialAd();
   }
 
 
