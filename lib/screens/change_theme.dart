@@ -5,6 +5,8 @@ import 'package:mukto_dhara/provider/ad_controller.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/api_provider.dart';
+
 class ChangeThemePage extends StatefulWidget{
   const ChangeThemePage({Key? key}) : super(key: key);
 
@@ -36,7 +38,8 @@ class _ChangeThemePageState extends State<ChangeThemePage> with SingleTickerProv
   @override
   void dispose() {
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.showInterstitialAd();
   }
 
 

@@ -3,8 +3,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
-
 import '../provider/ad_controller.dart';
+import '../provider/api_provider.dart';
 
 class RefineScreen extends StatefulWidget {
   static const String text =
@@ -29,19 +29,24 @@ class _RefineScreenState extends State<RefineScreen> {
   void initState() {
     super.initState();
     ///Initialize Ad
-    adController.loadInterstitialAd();
-    adController.loadBannerAdd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected){
+      adController.loadInterstitialAd();
+      adController.loadBannerAdd();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.showInterstitialAd();
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    final ApiProvider apiProvider = Provider.of<ApiProvider>(context);
     final Size size = MediaQuery.of(context).size;
 
     themeProvider.changeStatusBarTheme();
@@ -73,12 +78,12 @@ class _RefineScreenState extends State<RefineScreen> {
         ],
       ),
       body: _bodyUI(size, themeProvider),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: apiProvider.connected? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,
         height: adController.bannerAd!.size.height.toDouble(),
-      ),
+      ):const SizedBox(height: 5),
     );
   }
 

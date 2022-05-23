@@ -10,6 +10,8 @@ import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/api_provider.dart';
+
 class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
 
@@ -36,14 +38,17 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   void initState() {
     super.initState();
     ///Initialize Ad
-    adController.loadInterstitialAd();
-    adController.loadBannerAdd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected){
+      adController.loadBannerAdd(); adController.loadInterstitialAd();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context, listen: false);
+    if (ap.connected) adController.showInterstitialAd();
   }
 
   @override

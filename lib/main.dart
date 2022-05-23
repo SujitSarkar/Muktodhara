@@ -16,8 +16,8 @@ void main() async{
 }
 
 class MyApp extends StatefulWidget {
-  bool isLight;
-  MyApp(this.isLight);
+  final bool isLight;
+  const MyApp(this.isLight, {Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();

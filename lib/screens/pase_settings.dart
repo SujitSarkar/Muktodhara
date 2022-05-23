@@ -39,8 +39,11 @@ class _PageSettingsState extends State<PageSettings> {
     _initializeData(apiProvider);
 
     ///Initialize Ad
-    adController.loadInterstitialAd();
-    adController.loadBannerAdd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected){
+      adController.loadInterstitialAd();
+      adController.loadBannerAdd();
+    }
   }
 
   Future<void> _initializeData(ApiProvider apiProvider) async {
@@ -79,7 +82,8 @@ class _PageSettingsState extends State<PageSettings> {
   @override
   void dispose() {
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.showInterstitialAd();
   }
 
   @override

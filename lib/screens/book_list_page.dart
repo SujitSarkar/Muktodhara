@@ -68,13 +68,15 @@ class _BookListPageState extends State<BookListPage> {
   @override
   void initState() {
     super.initState();
-    adController.loadBannerAdd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.loadBannerAdd();
   }
 
   @override
   void dispose() {
     super.dispose();
-    adController.disposeAllAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.disposeAllAd();
   }
 
   @override
@@ -170,7 +172,7 @@ class _BookListPageState extends State<BookListPage> {
                         style:
                             TextStyle(color: themeProvider.appBarTitleColor()),
                       )),
-                Container(
+                if(apiProvider.connected) Container(
                   alignment: Alignment.center,
                   child: AdWidget(ad: adController.bannerAd!),
                   width: MediaQuery.of(context).size.width,

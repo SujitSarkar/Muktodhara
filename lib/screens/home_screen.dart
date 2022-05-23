@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:mukto_dhara/custom_classes/scroll_to_hide_widget.dart';
@@ -15,7 +14,6 @@ import 'package:mukto_dhara/provider/sqlite_database_helper.dart';
 import 'package:mukto_dhara/provider/theme_provider.dart';
 import 'package:mukto_dhara/screens/favourite_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../provider/ad_controller.dart';
 
 class Home extends StatefulWidget {
@@ -77,14 +75,16 @@ class _HomeState extends State<Home> {
     super.initState();
     _scrollController = ScrollController();
     ///Initialize Ad
-    adController.loadInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.loadInterstitialAd();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.showInterstitialAd();
   }
 
   @override

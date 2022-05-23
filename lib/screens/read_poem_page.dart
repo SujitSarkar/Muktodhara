@@ -26,14 +26,18 @@ class _ReadPoemState extends State<ReadPoem> {
   void initState() {
     super.initState();
     ///Initialize Ad
-    adController.loadInterstitialAd();
-    adController.loadBannerAdd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected){
+      adController.loadInterstitialAd();
+      adController.loadBannerAdd();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    adController.showInterstitialAd();
+    final ApiProvider ap = Provider.of<ApiProvider>(context,listen: false);
+    if(ap.connected) adController.showInterstitialAd();
   }
 
 
