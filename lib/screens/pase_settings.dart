@@ -89,6 +89,7 @@ class _PageSettingsState extends State<PageSettings> {
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    final ApiProvider apiProvider= Provider.of<ApiProvider>(context);
     final Size size = MediaQuery.of(context).size;
 
     themeProvider.changeStatusBarTheme();
@@ -114,12 +115,12 @@ class _PageSettingsState extends State<PageSettings> {
           ? SpinKitDualRing(
               color: themeProvider.spinKitColor(), lineWidth: 4, size: 40)
           : _bodyUI(size, themeProvider),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: apiProvider.connected? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,
         height: adController.bannerAd!.size.height.toDouble(),
-      ),
+      ): const SizedBox(height: 5),
     );
   }
 

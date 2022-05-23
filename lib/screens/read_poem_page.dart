@@ -74,12 +74,12 @@ class _ReadPoemState extends State<ReadPoem> {
         ],
       ),
       body: _bodyUI(size, themeProvider, apiProvider),
-      bottomNavigationBar: Container(
+      bottomNavigationBar:apiProvider.connected? Container(
         alignment: Alignment.center,
         child: AdWidget(ad: adController.bannerAd!),
         width: MediaQuery.of(context).size.width,
         height: adController.bannerAd!.size.height.toDouble(),
-      ),
+      ): const SizedBox(height: 5),
     );
   }
 
