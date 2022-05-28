@@ -7,23 +7,23 @@ class AdController{
   ///Interstitial
   //Android: ca-app-pub-3005672286778851/5114180948
   ///Admob App ID:::::(AndroidManifest.xml & Info.plist)
-  //Android: cca-app-pub-3005672286778851~1034414298
+  //Android: ca-app-pub-3005672286778851~1034414298
 
 
   InterstitialAd? interstitialAd;
   BannerAd? bannerAd;
 
   static final String bannerAddUnitId=Platform.isAndroid
-      // ? 'ca-app-pub-3005672286778851/8123487663'
-      // : 'ca-app-pub-3005672286778851/8123487663';
-      ? 'ca-app-pub-3940256099942544/6300978111'
-      : 'ca-app-pub-3940256099942544/6300978111';
+      ? 'ca-app-pub-3005672286778851/8123487663'
+      : 'ca-app-pub-3005672286778851/8123487663';
+      // ? 'ca-app-pub-3940256099942544/6300978111'
+      // : 'ca-app-pub-3940256099942544/6300978111';
 
   static final String interstitialAddUnitId=Platform.isAndroid
-      // ? 'ca-app-pub-3005672286778851/5114180948'
-      // : 'ca-app-pub-3005672286778851/5114180948';
-      ? 'ca-app-pub-3940256099942544/1033173712'
-      : 'ca-app-pub-3940256099942544/1033173712';
+      ? 'ca-app-pub-3005672286778851/5114180948'
+      : 'ca-app-pub-3005672286778851/5114180948';
+      // ? 'ca-app-pub-3940256099942544/1033173712'
+      // : 'ca-app-pub-3940256099942544/1033173712';
 
   void loadBannerAdd(){
     bannerAd = BannerAd(
